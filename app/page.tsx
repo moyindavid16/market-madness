@@ -1,5 +1,5 @@
 'use client'
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardTitle, CardContent } from "@/components/ui/card";
 import {Button } from "@/components/ui/button";
 import { useState } from 'react';
 import {Tabs, TabsTrigger, TabsContent, TabsList} from "@/components/ui/tabs";
@@ -9,7 +9,7 @@ import Graph from "@/components/graph";
 import { SignOutButton } from "@clerk/nextjs";
 const dummyData = {
   portfolio_values:[
-    {name: 'user', value: '$14,592', change:'-%1.24'},
+    {name: 'Your Portfolio', value: '$14,592', change:'-%1.24'},
     {name: 'Dow Jones', value: '$12,345', change:'+%0.56'},
     {name:'Interest Rate', value: '2.5%', change: '+0.25'},
   ],
@@ -151,11 +151,18 @@ export default function Home() {
 {/* Right column */}
             <div className="border-[#221f1e] col-span-4 grid grid-rows-[auto_1fr_1fr] gap-2">
                 {/* Top row */}
-                <div className="flex justify-between items-center h-12">
+                <div className="flex justify-between items-center h-16">
                     <CardTitle className="pl-4 text-white text-2xl">Market Madness</CardTitle>
-                    <div className="flex gap-2">
-                        <Button variant="outline" size="sm">Market</Button>
-                        <SignOutButton><Button variant="outline" size="sm">Log-Out</Button></SignOutButton>
+                    <div className="flex gap-4">
+                        <SignOutButton>
+                            <Button
+                                variant="outline"
+                                size="lg"
+                                className="bg-gradient-to-r from-red-500 to-orange-500 text-white border-none hover:from-red-600 hover:to-orange-600"
+                            >
+                                Log-Out
+                            </Button>
+                        </SignOutButton>
                     </div>
                 </div>
 
@@ -183,10 +190,18 @@ export default function Home() {
                 </div>
 
                 {/* Bottom row */}
-                <Card className="bg-[#0c0a09] text-white row-span-1 border-[#221f1e]">
-                    <CardHeader>
-                        <CardTitle>Table</CardTitle>
-                    </CardHeader>
+                <Card className="bg-[#0c0a09] text-white row-span-1 border-[#221f1e] relative">
+                    <div className="flex justify-between items-center p-4">
+                        <CardTitle className="text-2xl pl-4">Your Portfolio</CardTitle>
+                        <Button
+                            variant="outline"
+                            size="lg"
+                            className="bg-gradient-to-r from-green-500 to-green-600 text-white border-none hover:from-green-600 hover:to-green-700"
+                            onClick={() => window.location.href = '/market'}
+                        >
+                            Market
+                        </Button>
+                    </div>
                     <CardContent>
                         <Table>
                             <TableHeader>
@@ -199,8 +214,15 @@ export default function Home() {
                             <TableBody>
                                 {dummyData.your_stocks.map((row, index) => (
                                     <TableRow key={index}>
-                                        {Object.values(row).map((value, cellIndex) => (
-                                            <TableCell key={cellIndex}>{value}</TableCell>
+                                        {Object.entries(row).map(([key, value], cellIndex) => (
+                                            <TableCell
+                                                key={cellIndex}
+                                                className={key === 'change' ? (
+                                                    value.startsWith('-') ? 'text-red-500' : 'text-green-500'
+                                                ) : ''}
+                                            >
+                                                {value}
+                                            </TableCell>
                                         ))}
                                     </TableRow>
                                 ))}
