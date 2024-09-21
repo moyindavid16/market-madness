@@ -98,7 +98,7 @@ export default function Home() {
                 <DialogContent className="bg-[#1c1a19] border-[#221f1e]">
                   <DialogHeader>
                     <DialogTitle className="text-white">Manage Leagues</DialogTitle>
-                  </DialogHeader>
+                                    </DialogHeader>
                   <Tabs value={modalMode} className="text-white">
                     <TabsList className="grid w-full grid-cols-2 bg-[#0c0a09]">
                       <TabsTrigger
@@ -210,9 +210,6 @@ export default function Home() {
           <div className="flex justify-between items-center h-12">
             <CardTitle className="pl-4 text-white text-2xl">Market Madness</CardTitle>
             <div className="flex gap-2">
-              <Button variant="outline" size="sm">
-                Market
-              </Button>
               <SignOutButton>
                 <Button variant="outline" size="sm">
                   Log-Out
@@ -253,9 +250,17 @@ export default function Home() {
 
           {/* Bottom row */}
           <Card className="bg-[#0c0a09] text-white row-span-1 border-[#221f1e]">
-            <CardHeader>
-              <CardTitle>Table</CardTitle>
-            </CardHeader>
+            <div className="flex justify-between items-center p-4">
+              <CardTitle className="pl-4 text-2xl">Your Portfolio</CardTitle>
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-gradient-to-r from-green-500 to-green-600 text-white border-none hover:from-green-600 hover:to-green-700"
+                onClick={() => window.location.href = '/market'}
+              >
+                Market
+              </Button>
+            </div>
             <CardContent>
               <Table>
                 <TableHeader>
