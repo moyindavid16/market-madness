@@ -1,13 +1,14 @@
 "use client";
-import {Card, CardHeader, CardTitle, CardContent} from "@/components/ui/card";
-import {Button} from "@/components/ui/button";
-import {useState} from "react";
-import {Tabs, TabsTrigger, TabsContent, TabsList} from "@/components/ui/tabs";
-import {TableHead, Table, TableHeader, TableBody, TableRow, TableCell} from "@/components/ui/table";
-import {Dialog, DialogTitle, DialogContent, DialogFooter, DialogTrigger, DialogHeader} from "@/components/ui/dialog";
 import Graph from "@/components/graph";
+import {Button} from "@/components/ui/button";
+import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
+import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger} from "@/components/ui/dialog";
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import {SignOutButton, useUser} from "@clerk/nextjs";
+import {useState} from "react";
 import useCreateLeague from "./domains/leagues/useCreateLeague";
+import useJoinLeague from "./domains/leagues/useJoinLeague";
 const dummyData = {
   portfolio_values: [
     {name: "user", value: "$14,592", change: "-%1.24"},
@@ -66,13 +67,20 @@ const dummyData = {
 export default function Home() {
   const [selectedLeague, setSelectedLeague] = useState<(typeof dummyData.full_leaderboards)[0] | null>(null);
   const [leagueName, setLeagueName] = useState("");
+  const [inviteCode, setInviteCode] = useState("");
+  const [modalMode, setModalMode] = useState("join");
   const {user} = useUser();
   const {mutate: createLeague} = useCreateLeague();
+  const {mutate: joinLeague} = useJoinLeague();
 
   const handleCreateLeague = () => {
     createLeague({userId: user?.id || "", leagueName: leagueName});
   };
-  
+
+  const handleJoinLeague = () => {
+    joinLeague({userId: user?.id || "", inviteCode});
+  };
+
   return (
     <div className="dark">
       <div className="grid grid-cols-5 gap-4 w-full p-4">
@@ -91,12 +99,20 @@ export default function Home() {
                   <DialogHeader>
                     <DialogTitle className="text-white">Manage Leagues</DialogTitle>
                   </DialogHeader>
-                  <Tabs defaultValue="join" className="text-white">
+                  <Tabs value={modalMode} className="text-white">
                     <TabsList className="grid w-full grid-cols-2 bg-[#0c0a09]">
-                      <TabsTrigger value="join" className="data-[state=active]:bg-[#221f1e]">
+                      <TabsTrigger
+                        onClick={() => setModalMode("join")}
+                        value="join"
+                        className="data-[state=active]:bg-[#221f1e]"
+                      >
                         Join a League
                       </TabsTrigger>
-                      <TabsTrigger value="create" className="data-[state=active]:bg-[#221f1e]">
+                      <TabsTrigger
+                        onClick={() => setModalMode("create")}
+                        value="create"
+                        className="data-[state=active]:bg-[#221f1e]"
+                      >
                         Create a League
                       </TabsTrigger>
                     </TabsList>
@@ -107,6 +123,8 @@ export default function Home() {
                         placeholder="Enter 6-digit code"
                         maxLength={6}
                         pattern="\d{6}"
+                        value={inviteCode}
+                        onChange={e => setInviteCode(e.target.value)}
                       />
                     </TabsContent>
                     <TabsContent value="create">
@@ -123,7 +141,7 @@ export default function Home() {
                     <Button
                       type="submit"
                       className="bg-[#221f1e] text-white hover:bg-[#2c2826]"
-                      onClick={()=>handleCreateLeague()}
+                      onClick={() => (modalMode === "join" ? handleJoinLeague() : handleCreateLeague())}
                     >
                       Add
                     </Button>
