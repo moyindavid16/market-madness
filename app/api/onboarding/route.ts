@@ -1,4 +1,4 @@
-import prisma from "../../../prisma/db";
+import prisma from "../../db/prisma";
 import {NextResponse} from "next/server";
 import {currentUser} from "@clerk/nextjs/server";
 import {redirect} from "next/navigation";
