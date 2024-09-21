@@ -29,7 +29,7 @@ export default function RootLayout({
   return (
     <Providers>
       <html lang="en">
-        <body className={`${geistSans.variable} ${geistMono.variable} antialiased w-full h-full bg-black`}>
+        <body className={`${geistSans.variable} ${geistMono.variable} antialiased w-full h-full`}>
           <SignedOut>
             <SignInButton />
           </SignedOut>
