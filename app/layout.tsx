@@ -1,6 +1,8 @@
-import type { Metadata } from "next";
+import type {Metadata} from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import {SignedIn, SignedOut, SignInButton} from "@clerk/nextjs";
+import Providers from "./providers";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -23,13 +25,17 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  "use client";
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
-    </html>
+    <Providers>
+      <html lang="en">
+        <body className={`${geistSans.variable} ${geistMono.variable} antialiased w-full h-full bg-black`}>
+          <SignedOut>
+            <SignInButton />
+          </SignedOut>
+          <SignedIn>{children}</SignedIn>
+        </body>
+      </html>
+    </Providers>
   );
 }
