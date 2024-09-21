@@ -8,18 +8,18 @@ datasource db {
 }
 
 model User {
-  id              String   @id @default(uuid())
+  id              String   @id
   name            String
   portfolio_value Float    @default(0)
-  leagues         League[]
   trades          Trades[]
+  leagues         League[] @relation("LeagueToUser")
 }
 
 model League {
   id          String @id @default(uuid())
   invite_code String @unique
   name        String
-  Users       User[]
+  Users       User[] @relation("LeagueToUser")
 }
 
 model UserStocks {
@@ -29,11 +29,16 @@ model UserStocks {
 }
 
 model Trades {
-  id          String @id @default(uuid())
+  id          String  @id @default(uuid())
   trade_value Float
   price       Float
   quantity    Float
+  userId      String?
+  User        User?   @relation(fields: [userId], references: [id])
+}
 
-  User   User?   @relation(fields: [userId], references: [id])
-  userId String?
+model Market {
+  name  String   @id @unique
+  price Float
+  time  DateTime
 }

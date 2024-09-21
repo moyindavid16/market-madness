@@ -31,7 +31,7 @@ export default function RootLayout({
       <html lang="en">
         <body className={`${geistSans.variable} ${geistMono.variable} antialiased w-full h-full`}>
           <SignedOut>
-            <SignInButton />
+            <SignInButton signUpForceRedirectUrl={process.env.NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL} />
           </SignedOut>
           <SignedIn>{children}</SignedIn>
         </body>

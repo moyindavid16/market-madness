@@ -1,105 +1,160 @@
-"use client";
-
+'use client'
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import {Button } from "@/components/ui/button";
+import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, } from "@/components/ui/dropdown-menu"
+import { useState } from 'react';
+import { TableHead, Table, TableHeader, TableBody, TableRow, TableCell } from "@/components/ui/table";
+import {Dialog,DialogTitle,DialogContent, DialogFooter, DialogTrigger, DialogHeader}from "@/components/ui/dialog"
 import { SignOutButton } from "@clerk/nextjs";
-import Image from "next/image";
+const dummyData = {
+  tabs: [
+    { id: 'tab1', label: 'Global', data: [
+        { name: 'Alice', val: '$14,835' },
+        { name: 'Bob', val: '$12,450' },
+        { name: 'Charlie', val: '$9,591' },
+        { name: 'David', val: '$8,623' },
+        { name: 'Eve', val: '$7,250' },
+        { name: 'Frank', val: '$6,550' },
+        { name: 'Grace', val: '$5,875' },
+        { name: 'Henry', val: '$5,250' },
+        { name: 'Ivy', val: '$4,800' },
+      ]},
+    { id: 'tab2', label: 'Friends', data: [
+        { name: 'Bob', val: '$12,450' },
+        { name: 'David', val: '$8,623' },
+        { name: 'Frank', val: '$6,550' },
+        { name: 'Henry', val: '$5,250' },
+      ]}
+  ],
+  bottomTable: [
+    { ticker: 'NVDA', stockprice: '$801', your_val: '$10,534', change: '+1.23%' },
+    { ticker: 'AAPL', stockprice: '$287.45', your_val: '$10,234', change: '-0.56%' },
+    { ticker: 'GOOGL', stockprice: '$1235.23', your_val: '$10,534', change: '+1.23%' }
+
+  ]
+};
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <SignOutButton />
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [activeTab, setActiveTab] = useState<typeof dummyData.tabs[0]>(dummyData.tabs[0]);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  return (
+    <div className="dark">
+      <div className="grid grid-cols-5 gap-4 w-full p-4">
+        {/* Left column */}
+        <Card className="bg-[#0c0a09] text-white border-[#221f1e]">
+            <div className="flex flex-col p-4">
+              <div className="flex justify-between items-center mb-2">
+                <CardTitle className="text-lg">Leaderboard</CardTitle>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" className="h-8 px-2 text-sm">Add</Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Join a League</DialogTitle>
+                    </DialogHeader>
+                    <input
+                        type="text"
+                        className="w-full p-2 border rounded"
+                        placeholder="Enter Code"
+                    />
+                    <DialogFooter>
+                      <Button type="submit">Add</Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="w-full justify-between">
+                    {activeTab.label}
+                    <span className="ml-2">▼</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-60">
+                  {dummyData.tabs.map(tab => (
+                      <DropdownMenuItem key={tab.id} onSelect={() => setActiveTab(tab)}>
+                        {tab.label}
+                      </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    {Object.keys(activeTab.data[0]).map(key => (
+                        <TableHead key={key}>{key}</TableHead>
+                    ))}
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {activeTab.data.map((row, index) => (
+                      <TableRow key={index}>
+                        {Object.values(row).map((value, cellIndex) => (
+                            <TableCell key={cellIndex}>{value}</TableCell>
+                        ))}
+                      </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+
+          {/* Right column */}
+          <div className="border-[#221f1e] col-span-4 grid grid-rows-3 gap-4">
+            {/* Top row */}
+            <div className="flex justify-between items-center h-12">
+              <CardTitle className="pl-4 text-white text-2xl">Market Madness</CardTitle>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm">Market</Button>
+                <SignOutButton><Button variant="outline" size="sm">Log-Out</Button></SignOutButton>
+              </div>
+            </div>
+
+            {/* Middle row */}
+            <div className="grid grid-cols-3 gap-4">
+              <Card className="bg-[#0c0a09] text-white col-span-1 border-[#221f1e]">
+                <CardContent>
+                  {/* Add cards content here */}
+                </CardContent>
+              </Card>
+              <Card className="bg-[#0c0a09] text-white col-span-2 border-[#221f1e]">
+                <CardContent>
+                  {/* Add graph content here */}
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Bottom row */}
+            <Card className="bg-[#0c0a09] text-white row-span-1 border-[#221f1e]">
+              <CardHeader>
+                <CardTitle>Table</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      {Object.keys(dummyData.bottomTable[0]).map(key => (
+                          <TableHead key={key}>{key}</TableHead>
+                      ))}
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {dummyData.bottomTable.map((row, index) => (
+                        <TableRow key={index}>
+                          {Object.values(row).map((value, cellIndex) => (
+                              <TableCell key={cellIndex}>{value}</TableCell>
+                          ))}
+                        </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      </div>
   );
 }
