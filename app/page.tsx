@@ -15,9 +15,9 @@ import useJoinLeague from "./domains/leagues/useJoinLeague";
 import useMakeTrade from "./domains/trades/useMakeTrade";
 const data = {
   portfolio_values: [
-    {name: "Your Portfolio", value: "$14,592", change: "-%1.24"},
-    {name: "Dow Jones", value: "$12,345", change: "+%0.56"},
-    {name: "Interest Rate", value: "2.5%", change: "+0.25"},
+    {name: "Your Portfolio", value: "$14,592", change: "-1.24%"},
+    {name: "Dow Jones", value: "$12,345", change: "+0.56%"},
+    {name: "Interest Rate", value: "2.5%", change: "+0.25%"},
     {name: "Inflation", value: "69.5%", change: "+1000%"},
   ],
   leagues: [
