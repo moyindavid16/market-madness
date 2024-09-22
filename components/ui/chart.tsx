@@ -143,7 +143,8 @@ function AbstractChart(props: AbstractChartProps) {
             },
             backgroundColor: null, 
             plotBackgroundColor: null,
-            plotBorderColor: '#606063'
+            plotBorderColor: '#606063',
+            spacingRight: 20
         },
         title: {
             text: null,
@@ -169,6 +170,7 @@ function AbstractChart(props: AbstractChartProps) {
                     color: '#E0E0E3'
                 }
             },
+            maxPadding: 0.04
         },
         yAxis: {
             gridLineColor: '#707073',

@@ -1,3 +1,4 @@
+import AbstractChart from "./ui/chart";
 
 interface graphProps {
   width?: number;
@@ -11,14 +12,31 @@ const Graph: React.FC<graphProps> = ({
   alt = 'I AM A GRAPH'
 }) => {
   return (
-    <div className="placeholder-graph">
-      <img
-          src={'/components/graph.jpg'}
-        width={width}
-        height={height}
-        alt={alt}
-      />
-    </div>
+    <AbstractChart 
+      instrumentName="S&P 500"
+      data={[
+        ["2024-08-20T13:00:00Z", 227.01], 
+        ["2024-08-20T14:00:00Z", 225.96], 
+        ["2024-08-20T15:00:00Z", 226.93],
+        ["2024-08-20T16:00:00Z", 226.50],
+        ["2024-08-20T17:00:00Z", 228.40],
+        ["2024-08-20T18:00:00Z", 228.90],
+        ["2024-08-20T19:00:00Z", 230.5],
+      ]}
+      inflationData={[
+        ["2024-08-20T13:00:00Z", 227.01],
+        ["2024-08-20T19:00:00Z", 229.00],
+      ]}
+      intrestRatesData={[
+        ["2024-08-20T13:00:00Z", 227.01],
+        ["2024-08-20T19:00:00Z", 230.30],
+      ]}
+      SPYData={[
+        ["2024-08-20T13:00:00Z", 227.01],
+        ["2024-08-20T19:00:00Z", 234.30],
+      ]}
+      className="bg-[#0C0A09] pt-6"
+    />
   );
 };
 
