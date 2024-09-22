@@ -51,7 +51,7 @@ export async function GET(req: Request, {params}: {params: {userId: string}}) {
       }
     })
     
-    return NextResponse.json({message: "Got all leagues", data: result}, {status: 200});
+    return NextResponse.json({message: "Got all leagues", data: result || []}, {status: 200});
   } catch (e) {
     console.log(e);
     return NextResponse.json({message: (e as Error).message, data: "leagues"}, {status: 200});
