@@ -5,7 +5,7 @@ import {useMutation} from "@tanstack/react-query";
 export default function useJoinLeague() {
   return useMutation({
     mutationFn: (body: {userId: string; inviteCode: string}) => {
-      return fetch(`/api/league/${body.inviteCode}`, {
+      return fetch(`/api/league/join/${body.inviteCode}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

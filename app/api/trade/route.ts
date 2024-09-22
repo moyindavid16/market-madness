@@ -10,25 +10,36 @@ export async function POST(req: Request, {params}: {params: {invite: string}}) {
   }
 
   try {
-    await prisma.trades.create({
+    const newTrade = await prisma.trades.create({
       data: {
         quantity,
         price,
         trade_value,
         ticker,
-        userId: userId
-      }
-    })
-    await prisma.user.update({
-      where: {
-        id: userId
+        userId: userId,
       },
-      data: {
-        portfolio_value: {
-          increment: trade_value
-        }
-      }
-    })
+    });
+
+    await prisma.userStocks.upsert({
+      where: {
+        ticker_userId: {
+          ticker,
+          userId,
+        },
+      },
+      update: {
+        quantity: {
+          increment: quantity,
+        },
+      },
+      create: {
+        ticker,
+        userId,
+        quantity,
+      },
+    });
+
+    return NextResponse.json({message: "Trade created", data: newTrade}, {status: 200});
   } catch (e) {
     console.log(e);
   }

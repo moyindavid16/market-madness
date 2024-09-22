@@ -18,7 +18,24 @@ export async function GET(req: Request, {params}: {params: {userId: string}}) {
           },
         },
       },
+      include: {
+        Users: {
+          select: {
+            value_snapshots: {
+              orderBy: {
+                id: "desc",
+              },
+              take: 1,
+              select: {
+                value: true,
+              },
+            }
+          }
+        }
+      }
     });
+    console.log(leagues)
+    // console.log(leagues && leagues[0].Users)
     
     return NextResponse.json({message: "Got all leagues", data: leagues}, {status: 200});
   } catch (e) {
