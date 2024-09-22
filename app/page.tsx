@@ -2,7 +2,7 @@
 import Graph from "@/components/graph";
 import {Button} from "@/components/ui/button";
 import {Card, CardContent, CardTitle} from "@/components/ui/card";
-import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger} from "@/components/ui/dialog";
+import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,DialogClose} from "@/components/ui/dialog";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,8 @@ import {useState} from "react";
 import useCreateLeague from "./domains/leagues/useCreateLeague";
 import useJoinLeague from "./domains/leagues/useJoinLeague";
 import useMakeTrade from "./domains/trades/useMakeTrade";
+import { useToast } from "@/hooks/use-toast";
+
 const data = {
   portfolio_values: [
     {name: "Your Portfolio", value: "$14,592", change: "-1.24%"},
@@ -21,7 +23,7 @@ const data = {
     {name: "Inflation", value: "69.5%", change: "+1000%"},
   ],
   leagues: [
-    { name: "Global", place: "5th", change: -2},
+    {name: "Global", place: "5th", change: -2},
     {name: "Friends", place: "1st", change: 1},
     {name: "Private", place: "3rd", change: 3},
   ],
@@ -90,6 +92,7 @@ export default function Home() {
   const {mutate: createLeague} = useCreateLeague();
   const {mutate: joinLeague} = useJoinLeague();
   const {mutate: makeTrade} = useMakeTrade();
+  const { toast } = useToast()
 
   const handleStockClick = (stock: Stock, action: 'buy' | 'sell') => {
     setSelectedStock(stock);
@@ -199,13 +202,30 @@ export default function Home() {
                     </TabsContent>
                   </Tabs>
                   <DialogFooter>
+                    <DialogClose asChild>
                     <Button
                       type="submit"
                       className="bg-[#221f1e] text-white hover:bg-[#2c2826]"
-                      onClick={() => (modalMode === "join" ? handleJoinLeague() : handleCreateLeague())}
+                      onClick={() => {
+                        if (modalMode === "join") {
+                          handleJoinLeague();
+                          toast({
+                            title: "Joined League",
+                            description: "You have successfully joined the league.",
+                            variant: "default",
+                          });
+                        } else {
+                          handleCreateLeague();
+                          toast({
+                            title: "Created League",
+                            description: "Your new league has been created.",
+                          });
+                        }
+                      }}
                     >
                       Add
                     </Button>
+                    </DialogClose>
                   </DialogFooter>
                 </DialogContent>
               </Dialog>

@@ -3,7 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import {SignedIn, SignedOut, SignInButton} from "@clerk/nextjs";
 import Providers from "./providers";
-
+import {Button} from "@/components/ui/button";
 const jetbrainsMono = localFont({
   src: "./fonts/JetBrainsMono-ExtraBold.ttf",
   variable: "--font-jetbrains-mono",
@@ -25,7 +25,12 @@ export default function RootLayout({
       <html lang="en">
         <body className={`${jetbrainsMono.variable} ${jetbrainsMono.variable} antialiased w-full h-full`}>
           <SignedOut>
-            <SignInButton signUpForceRedirectUrl={process.env.NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL} />
+            <div className="flex flex-col justify-center items-center h-screen space-y-4">
+              <h1 className="text-4xl font-bold">MARKET MADNESS</h1>
+              <Button variant="outline" className="h-8 px-2 text-sm">
+                <SignInButton signUpForceRedirectUrl={process.env.NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL} />
+              </Button>
+            </div>
           </SignedOut>
           <SignedIn>{children}</SignedIn>
         </body>
