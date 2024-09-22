@@ -6,7 +6,6 @@ export default function useGetUserTrades({userId}: {userId: string}) {
   return useQuery({
     queryKey: ["user-trades"],
     queryFn: async () => {
-      if(!userId)return
       const res = await fetch(`/api/trade/history/${userId}`, {
         method: "GET",
       });
