@@ -116,17 +116,13 @@ export default function Home() {
   const sortedStocks = [...data.your_stocks].sort((a, b) => {
     const aValue = a[sortColumn as keyof Stock];
     const bValue = b[sortColumn as keyof Stock];
-    if (typeof aValue === 'string' && typeof bValue === 'string') {
       const aNum = parseFloat(aValue.replace(/[^0-9.-]+/g, ''));
       const bNum = parseFloat(bValue.replace(/[^0-9.-]+/g, ''));
       if (!isNaN(aNum) && !isNaN(bNum)) {
         return sortDirection === 'asc' ? aNum - bNum : bNum - aNum;
       }
       return sortDirection === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
-    }
-    if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
-    if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
-    return 0;
+
   });
 
   const handleCreateLeague = () => {
@@ -360,19 +356,19 @@ export default function Home() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="cursor-pointer"onClick={() => handleSort('ticker')}>
+                    <TableHead className="cursor-pointer" onClick={() => handleSort('ticker')}>
                       Ticker {sortColumn === 'ticker' && (sortDirection === 'asc' ? '↑' : '↓')}
                     </TableHead>
-                    <TableHead className="cursor-pointer"onClick={() => handleSort('stockprice')}>
+                    <TableHead className="cursor-pointer" onClick={() => handleSort('stockprice')}>
                       Stock Price {sortColumn === 'stockprice' && (sortDirection === 'asc' ? '↑' : '↓')}
                     </TableHead>
-                    <TableHead className="cursor-pointer"onClick={() => handleSort('owned')}>
+                    <TableHead className="cursor-pointer" onClick={() => handleSort('owned')}>
                       Owned {sortColumn === 'owned' && (sortDirection === 'asc' ? '↑' : '↓')}
                     </TableHead>
-                    <TableHead className="cursor-pointer"onClick={() => handleSort('position')}>
+                    <TableHead className="cursor-pointer" onClick={() => handleSort('position')}>
                       Position {sortColumn === 'position' && (sortDirection === 'asc' ? '↑' : '↓')}
                     </TableHead>
-                    <TableHead className="cursor-pointer"onClick={() => handleSort('change')}>
+                    <TableHead className="cursor-pointer" onClick={() => handleSort('change')}>
                       Change {sortColumn === 'change' && (sortDirection === 'asc' ? '↑' : '↓')}
                     </TableHead>
                     <TableHead></TableHead>

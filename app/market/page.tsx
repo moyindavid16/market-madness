@@ -38,15 +38,12 @@ export default function MarketPage() {
     const aValue = a[sortColumn as keyof Stock];
     const bValue = b[sortColumn as keyof Stock];
     
-    if (typeof aValue === 'string' && typeof bValue === 'string') {
       if (sortColumn === 'price' || sortColumn === 'change') {
         const aNum = parseFloat(aValue.replace(/[^0-9.-]+/g, ''));
         const bNum = parseFloat(bValue.replace(/[^0-9.-]+/g, ''));
         return sortDirection === 'asc' ? aNum - bNum : bNum - aNum;
       }
       return sortDirection === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
-    }
-    return 0;
   });
 
   const handleSort = (column: 'ticker' | 'price' | 'change') => {
