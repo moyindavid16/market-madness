@@ -73,7 +73,6 @@ export default function Home() {
   const {data: userStocks = []} = useGetUserStocks({userId: user?.id || ""});
   const { toast } = useToast()
 
-
   const userLeaguesWithPlacement =
     leagues?.data?.map(
       (league: {
@@ -128,16 +127,22 @@ export default function Home() {
     }
   };
 
-  const sortedStocks = [...(userStocks.stocks || [])].sort((a, b) => {
-    const aValue = a[sortColumn as keyof Stock];
-    const bValue = b[sortColumn as keyof Stock];
-    const aNum = parseFloat(aValue.replace(/[^0-9.-]+/g, ""));
-    const bNum = parseFloat(bValue.replace(/[^0-9.-]+/g, ""));
-    if (!isNaN(aNum) && !isNaN(bNum)) {
-      return sortDirection === "asc" ? aNum - bNum : bNum - aNum;
-    }
-    return sortDirection === "asc" ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
-  });
+    const sortedStocks = [...(userStocks.stocks || [])].sort((a, b) => {
+      const aValue = parseFloat(a[sortColumn as keyof Stock]);
+      const bValue = parseFloat(b[sortColumn as keyof Stock]);
+      if (!isNaN(aValue) && !isNaN(bValue)) {
+        return sortDirection === "asc" ? aValue - bValue : bValue - aValue;
+      }
+      // Fallback to string comparison if parsing fails
+      return sortDirection === "asc" 
+        ? String(a[sortColumn as keyof Stock]).localeCompare(String(b[sortColumn as keyof Stock])) 
+        : String(b[sortColumn as keyof Stock]).localeCompare(String(a[sortColumn as keyof Stock]));
+    }).map(stock => ({
+      ...stock,
+      stockprice: `$${parseFloat(stock.stockprice).toFixed(2)}`,
+      position: `$${parseFloat(stock.position).toFixed(2)}`,
+      owned: parseFloat(stock.owned).toFixed(3),
+    }));
 
   const handleCreateLeague = () => {
     createLeague({userId: user?.id || "", leagueName: leagueName});
