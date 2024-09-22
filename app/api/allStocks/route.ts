@@ -20,6 +20,7 @@ export async function GET() {
       change: ((companyData[0].price - companyData[1].price) / companyData[1].price) * 100
     });
   }
+  // console.log(stocks);
 
   return NextResponse.json({stocks: stocks}, {status: 200});
 }

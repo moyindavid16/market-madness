@@ -1,5 +1,5 @@
 "use client";
-import {useState} from "react";
+import {use, useState} from "react";
 import Graph from "@/components/graph";
 import {Card, CardTitle, CardContent} from "@/components/ui/card";
 import {Button} from "@/components/ui/button";
@@ -8,6 +8,7 @@ import {Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription} from "@/
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Table, TableHead, TableHeader, TableBody, TableRow, TableCell} from "@/components/ui/table";
 import useGetUserTrades from "../domains/trades/useGetUserTrades";
+import useGetAllStocks from "../domains/stocks/useGetAllStocks"
 import {useUser} from "@clerk/nextjs";
 interface Stock {
   ticker: string;
@@ -35,17 +36,19 @@ export default function MarketPage() {
   const [sortDirection, setSortDirection] = useState("asc");
   const {user} = useUser();
   const {data: userTrades = {data: []}} = useGetUserTrades({userId: user?.id || ""});
+  const {data: allStocks} = useGetAllStocks();
   const Trades = userTrades.data || [];
   console.log("User trades:", Trades);
-  const filteredStocks = Stocks.filter(stock => stock.ticker.toLowerCase().includes(searchTerm.toLowerCase())).sort(
+  console.log("All stocks:", allStocks);
+  const filteredStocks = (allStocks?.stocks || []).filter(stock => stock.ticker.toLowerCase().includes(searchTerm.toLowerCase())).sort(
     (a, b) => {
       const aValue = a[sortColumn as keyof Stock];
       const bValue = b[sortColumn as keyof Stock];
 
       if (sortColumn === "price" || sortColumn === "change") {
-        const aNum = parseFloat(aValue.replace(/[^0-9.-]+/g, ""));
-        const bNum = parseFloat(bValue.replace(/[^0-9.-]+/g, ""));
-        return sortDirection === "asc" ? aNum - bNum : bNum - aNum;
+        // const aNum = parseFloat(aValue.replace(/[^0-9.-]+/g, ""));
+        // const bNum = parseFloat(bValue.replace(/[^0-9.-]+/g, ""));
+        return sortDirection === "asc" ? aValue - bValue : bValue - aValue;
       }
       return sortDirection === "asc" ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
     },
@@ -146,7 +149,7 @@ export default function MarketPage() {
                     <TableRow key={stock.ticker}>
                       <TableCell>{stock.ticker}</TableCell>
                       <TableCell>{stock.price}</TableCell>
-                      <TableCell className={stock.change.startsWith("+") ? "text-green-500" : "text-red-500"}>
+                      <TableCell className={stock.change>=0 ? "text-green-500" : "text-red-500"}>
                         {stock.change}
                       </TableCell>
                       <TableCell>
@@ -175,7 +178,7 @@ export default function MarketPage() {
               <span className="text-2xl font-bold">{selectedStock?.price}</span> |{" "}
               <span
                 className={`text-2xl font-bold ${
-                  selectedStock?.change.startsWith("+") ? "text-green-500" : "text-red-500"
+                  selectedStock?.change || 0>=0 ? "text-green-500" : "text-red-500"
                 }`}
               >
                 {selectedStock?.change}
