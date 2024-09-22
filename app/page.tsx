@@ -26,50 +26,50 @@ const data = {
     {name: "Inflation", value: "69.5%", change: "+1000%"},
   ],
   leagues: [
-    {name: "Global", place: "5th", change: -2},
-    {name: "Friends", place: "1st", change: 1},
-    {name: "Private", place: "3rd", change: 3},
+    {name: "Global", place: "5th"},
+    {name: "Friends", place: "1st"},
+    {name: "Private", place: "3rd"},
   ],
-  full_leaderboards: [
-    {
-      id: "tab1",
-      code:"",
-      label: "Global",
-      data: [
-        {name: "Alice", val: "$14,835"},
-        {name: "Bob", val: "$12,450"},
-        {name: "Charlie", val: "$9,591"},
-        {name: "David", val: "$8,623"},
-        {name: "Eve", val: "$7,250"},
-        {name: "Frank", val: "$6,550"},
-        {name: "Grace", val: "$5,875"},
-        {name: "Henry", val: "$5,250"},
-        {name: "Ivy", val: "$4,800"},
-      ],
-    },
-    {
-      id: "tab2",
-      label: "Friends",
-      code:"A7V93J",
-      data: [
-        {name: "Bob", val: "$12,450"},
-        {name: "David", val: "$8,623"},
-        {name: "Frank", val: "$6,550"},
-        {name: "Henry", val: "$5,250"},
-      ],
-    },
-    {
-      id: "tab3",
-      label: "Private",
-      code:"B540D8",
-      data: [
-        {name: "Charlie", val: "$9,591"},
-        {name: "David", val: "$8,623"},
-        {name: "Frank", val: "$6,550"},
-        {name: "Grace", val: "$5,875"},
-      ],
-    },
-  ],
+  // full_leaderboards: [
+  //   {
+  //     id: "tab1",
+  //     code:"",
+  //     label: "Global",
+  //     data: [
+  //       {name: "Alice", val: "$14,835"},
+  //       {name: "Bob", val: "$12,450"},
+  //       {name: "Charlie", val: "$9,591"},
+  //       {name: "David", val: "$8,623"},
+  //       {name: "Eve", val: "$7,250"},
+  //       {name: "Frank", val: "$6,550"},
+  //       {name: "Grace", val: "$5,875"},
+  //       {name: "Henry", val: "$5,250"},
+  //       {name: "Ivy", val: "$4,800"},
+  //     ],
+  //   },
+  //   {
+  //     id: "tab2",
+  //     label: "Friends",
+  //     code:"A7V93J",
+  //     data: [
+  //       {name: "Bob", val: "$12,450"},
+  //       {name: "David", val: "$8,623"},
+  //       {name: "Frank", val: "$6,550"},
+  //       {name: "Henry", val: "$5,250"},
+  //     ],
+  //   },
+  //   {
+  //     id: "tab3",
+  //     label: "Private",
+  //     code:"B540D8",
+  //     data: [
+  //       {name: "Charlie", val: "$9,591"},
+  //       {name: "David", val: "$8,623"},
+  //       {name: "Frank", val: "$6,550"},
+  //       {name: "Grace", val: "$5,875"},
+  //     ],
+  //   },
+  // ],
   your_stocks: [
     {ticker: "NVDA", stockprice: "$801", owned: "19.3", position:"$29,949", change: "+10.34%"},
     {ticker: "AAPL", stockprice: "$287.45", owned: "5.3", position:"$12,202", change: "-0.56%"},
@@ -83,8 +83,9 @@ interface Stock {
   position: string;
   change: string;
 }
+
 export default function Home() {
-  const [selectedLeague, setSelectedLeague] = useState<(typeof data.full_leaderboards)[0] | null>(null);
+  const [selectedLeague, setSelectedLeague] = useState<(typeof leagues)[0] | null>(null);
   const [leagueName, setLeagueName] = useState("");
   const [inviteCode, setInviteCode] = useState("");
   const [modalMode, setModalMode] = useState("join");
@@ -98,6 +99,34 @@ export default function Home() {
   const {mutate: joinLeague} = useJoinLeague();
   const {mutate: makeTrade} = useMakeTrade();
   const {data: leagues} = useGetUserLeagues({userId: user?.id || ""});
+  console.log("Leagues data:", leagues);
+
+const userLeaguesWithPlacement = leagues?.data?.map((league: { name: string, id: string, code: string, label: string, data: Array<{ userId: string, name: string }> }) => {
+  console.log("Processing league:", league);
+  if (!league.data) {
+    console.warn(`League ${league.name} has no leaderboard data`);
+    return { name: league.label, place: 'N/A' };
+  }
+  const userRank = league.data.findIndex((entry) => entry.name === user?.fullName);
+  console.log("User rank:", userRank);
+  return {
+    name: league.label,
+    place: userRank !== -1 ? `${userRank + 1}${getOrdinalSuffix(userRank + 1)}` : 'N/A'
+  };
+}) || [];
+  console.log("userLeaguesWithPlacement:", userLeaguesWithPlacement);
+
+  const userleagues = userLeaguesWithPlacement.map((league: { name: string; place: string }) => ({
+    name: league.name,
+    place: league.place
+  }));
+  function getOrdinalSuffix(i: number) {
+    const j = i % 10, k = i % 100;
+    if (j == 1 && k != 11) return "st";
+    if (j == 2 && k != 12) return "nd";
+    if (j == 3 && k != 13) return "rd";
+    return "th";
+  }
   const { toast } = useToast()
 
   const handleStockClick = (stock: Stock, action: 'buy' | 'sell') => {
@@ -105,7 +134,6 @@ export default function Home() {
     setTradeAction(action);
     setSheetOpen(true);
   };
-
   const [sortColumn, setSortColumn] = useState('ticker');
   const [sortDirection, setSortDirection] = useState('asc');
 
@@ -143,7 +171,10 @@ export default function Home() {
     console.log('Sell details:', tradeDetails);
     makeTrade({userId: user?.id || "", quantity: tradeDetails.amount, price: tradeDetails.price, trade_value: tradeDetails.total, ticker: tradeDetails.ticker});
   };
-
+const handleLeagueClick = (league: { name: string }) => {
+  const foundLeague = leagues?.data?.find((l: { label: string }) => l.label === league.name);
+  if (foundLeague) setSelectedLeague(foundLeague);
+};
   return (
     <div className="dark">
       <div className="grid grid-cols-5 gap-4 w-full p-4">
@@ -243,23 +274,18 @@ export default function Home() {
             </div>
             {!selectedLeague ? (
               <div className="space-y-2">
-                {data.leagues.map((league, index) => (
-                  <Card
-                    key={index}
-                    className="bg-[#0c0a09] text-white border-[#221f1e] p-3 cursor-pointer hover:bg-[#1c1a19] transition-colors"
-                    onClick={() => {
-                      const foundLeague = data.full_leaderboards.find(l => l.label === league.name);
-                      if (foundLeague) setSelectedLeague(foundLeague);
-                    }}
-                  >
+                {userleagues.map((league: { name: string; place: string }, index: number) => (
+                    <Card
+                        key={index}
+                        className="bg-[#0c0a09] text-white border-[#221f1e] p-3 cursor-pointer hover:bg-[#1c1a19] transition-colors"
+                        onClick={() => {
+                          handleLeagueClick(league);
+                        }}
+                    >
                     <div className="flex justify-between items-center">
                       <div>
                         <h3 className="font-semibold">{league.name}</h3>
                         <p className="text-sm text-gray-400">{league.place}</p>
-                      </div>
-                      <div className={`flex items-center ${league.change > 0 ? "text-green-500" : "text-red-500"}`}>
-                        {league.change > 0 ? "↑" : "↓"}
-                        <span className="ml-1">{Math.abs(league.change)}</span>
                       </div>
                     </div>
                   </Card>
@@ -285,10 +311,10 @@ export default function Home() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {selectedLeague.data.map((entry, index) => (
+                      {selectedLeague.data.map((entry: { name: string; value: number }, index: number) => (
                         <TableRow key={index}>
                           <TableCell>{entry.name}</TableCell>
-                          <TableCell>{entry.val}</TableCell>
+                          <TableCell>${entry.value.toFixed(2)}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
