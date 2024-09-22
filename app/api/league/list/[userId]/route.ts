@@ -13,7 +13,7 @@ export async function GET(req: Request, {params}: {params: {userId: string}}) {
     const leagues = await prisma.league.findMany({
       where: {
         Users: {
-          every: {
+          some: {
             id: userId,
           },
         },
@@ -29,15 +29,29 @@ export async function GET(req: Request, {params}: {params: {userId: string}}) {
               select: {
                 value: true,
               },
-            }
+            },
+            name: true
           }
         }
       }
     });
-    console.log(leagues)
-    // console.log(leagues && leagues[0].Users)
     
-    return NextResponse.json({message: "Got all leagues", data: leagues}, {status: 200});
+    const result = leagues.map((league) => {
+      const data = league.Users.map((user) => {
+        return {
+          name: user.name,
+          value: user.value_snapshots && user.value_snapshots[0] && user.value_snapshots[0].value || 0
+        }
+      })
+      return {
+        id: league.id,
+        code: league.invite_code,
+        label: league.name,
+        data
+      }
+    })
+    
+    return NextResponse.json({message: "Got all leagues", data: result}, {status: 200});
   } catch (e) {
     console.log(e);
     return NextResponse.json({message: (e as Error).message, data: "leagues"}, {status: 200});
