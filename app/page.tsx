@@ -134,14 +134,14 @@ export default function Home() {
         return sortDirection === "asc" ? aValue - bValue : bValue - aValue;
       }
       // Fallback to string comparison if parsing fails
-      return sortDirection === "asc" 
-        ? String(a[sortColumn as keyof Stock]).localeCompare(String(b[sortColumn as keyof Stock])) 
+      return sortDirection === "asc"
+        ? String(a[sortColumn as keyof Stock]).localeCompare(String(b[sortColumn as keyof Stock]))
         : String(b[sortColumn as keyof Stock]).localeCompare(String(a[sortColumn as keyof Stock]));
     }).map(stock => ({
       ...stock,
-      stockprice: `$${parseFloat(stock.stockprice).toFixed(2)}`,
-      position: `$${parseFloat(stock.position).toFixed(2)}`,
-      owned: parseFloat(stock.owned).toFixed(3),
+      stockprice: `$${stock.stockprice}`,
+      position: `$${stock.position}`,
+      owned: stock.owned.toString(),
     }));
 
   const handleCreateLeague = () => {
