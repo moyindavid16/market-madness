@@ -15,6 +15,7 @@ import useJoinLeague from "./domains/leagues/useJoinLeague";
 import useMakeTrade from "./domains/trades/useMakeTrade";
 import { useToast } from "@/hooks/use-toast";
 import {InputOTP, InputOTPGroup, InputOTPSlot} from "@/components/ui/input-otp";
+import useGetUserLeagues from "./domains/leagues/useGetUserLeagues";
 
 const data = {
   portfolio_values: [
@@ -95,6 +96,7 @@ export default function Home() {
   const {mutate: createLeague} = useCreateLeague();
   const {mutate: joinLeague} = useJoinLeague();
   const {mutate: makeTrade} = useMakeTrade();
+  const {data: leagues} = useGetUserLeagues({userId: user?.id || ""});
   const { toast } = useToast()
 
   const handleStockClick = (stock: Stock, action: 'buy' | 'sell') => {
