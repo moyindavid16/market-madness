@@ -12,6 +12,7 @@ import {SignOutButton, useUser} from "@clerk/nextjs";
 import {useState} from "react";
 import useCreateLeague from "./domains/leagues/useCreateLeague";
 import useJoinLeague from "./domains/leagues/useJoinLeague";
+import useMakeTrade from "./domains/trades/useMakeTrade";
 const dummyData = {
   portfolio_values: [
     {name: "user", value: "$14,592", change: "-%1.24"},
@@ -84,6 +85,7 @@ export default function Home() {
   const {user} = useUser();
   const {mutate: createLeague} = useCreateLeague();
   const {mutate: joinLeague} = useJoinLeague();
+  const {mutate: makeTrade} = useMakeTrade();
 
   const handleStockClick = (stock: Stock, action: 'buy' | 'sell') => {
     setSelectedStock(stock);
@@ -123,6 +125,7 @@ export default function Home() {
   const handleSellClick = (tradeDetails: { ticker: string; amount: number; price: number; total: number }) => {
     // Implement the sell logic here
     console.log('Sell details:', tradeDetails);
+    makeTrade({userId: user?.id || "", quantity: tradeDetails.amount, price: tradeDetails.price, trade_value: tradeDetails.total, ticker: tradeDetails.ticker});
   };
 
   return (
