@@ -50,7 +50,7 @@ export async function GET(req: Request, {params}: {params: {userId: string}}) {
         data
       }
     })
-    console.log(result)
+    
     return NextResponse.json({message: "Got all leagues", data: result}, {status: 200});
   } catch (e) {
     console.log(e);
