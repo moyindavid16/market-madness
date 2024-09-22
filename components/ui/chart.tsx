@@ -17,7 +17,7 @@ interface AbstractChartProps {
 
 function AbstractChart(props: AbstractChartProps) {
     const [chartVal, setChartVal] = useState<number>(props.data ? props.data[0][1] : 0);
-    const stepValue = Math.ceil(props.data.length / 6);
+    //const stepValue = Math.ceil(props.data.length / 6);
 
     const dataSeries = props.data.map((record) => [new Date(record[0]).getTime(), record[1]]);
 
@@ -160,7 +160,7 @@ function AbstractChart(props: AbstractChartProps) {
             },
             type: 'datetime',
             labels: {
-                step: stepValue,
+                step: 1,
                 formatter: function () {
                     const localDate = new Date(this.value);
                     return Highcharts.dateFormat('%b %e, %H:%M', localDate.getTime());
