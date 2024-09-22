@@ -1,14 +1,16 @@
 "use client";
 import Graph from "@/components/graph";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { SignOutButton, useUser } from "@clerk/nextjs";
-import { useState } from "react";
+import {Button} from "@/components/ui/button";
+import {Card, CardContent, CardTitle} from "@/components/ui/card";
+import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger} from "@/components/ui/dialog";
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import {SignOutButton, useUser} from "@clerk/nextjs";
+import {useState} from "react";
 import useCreateLeague from "./domains/leagues/useCreateLeague";
-import useGetUserLeagues from "./domains/leagues/useGetUserLeagues";
 import useJoinLeague from "./domains/leagues/useJoinLeague";
 const dummyData = {
   portfolio_values: [
@@ -59,21 +61,53 @@ const dummyData = {
     },
   ],
   your_stocks: [
-    {ticker: "NVDA", stockprice: "$801", your_val: "$10,534", change: "+1.23%"},
-    {ticker: "AAPL", stockprice: "$287.45", your_val: "$10,234", change: "-0.56%"},
-    {ticker: "GOOGL", stockprice: "$1235.23", your_val: "$10,534", change: "+1.23%"},
+    {ticker: "NVDA", stockprice: "$801", owned: "$19.3", position:"$29,949", change: "+1.23%"},
+    {ticker: "AAPL", stockprice: "$287.45", owned: "5.3", position:"$12,202", change: "-0.56%"},
+    {ticker: "GOOGL", stockprice: "$1235.23", owned: "0.02", position:"$10", change: "+1.23%"},
   ],
 };
-
+interface Stock {
+  ticker: string;
+  stockprice: string;
+  owned: string;
+  position: string;
+  change: string;
+}
 export default function Home() {
   const [selectedLeague, setSelectedLeague] = useState<(typeof dummyData.full_leaderboards)[0] | null>(null);
   const [leagueName, setLeagueName] = useState("");
   const [inviteCode, setInviteCode] = useState("");
   const [modalMode, setModalMode] = useState("join");
+  const [tradeType, setTradeType] = useState<'amount' | 'price'>('amount');
+  const [tradeValue, setTradeValue] = useState('');
+  const [tradeAction, setTradeAction] = useState<'buy' | 'sell'>('buy');
   const {user} = useUser();
   const {mutate: createLeague} = useCreateLeague();
   const {mutate: joinLeague} = useJoinLeague();
-  const {data: userLeagues} = useGetUserLeagues({userId: user?.id || ""});
+
+  const handleStockClick = (stock: Stock, action: 'buy' | 'sell') => {
+    setSelectedStock(stock);
+    setTradeAction(action);
+    setSheetOpen(true);
+  };
+
+  const [sortColumn, setSortColumn] = useState('ticker');
+  const [sortDirection, setSortDirection] = useState('asc');
+
+  const handleSort = (column: keyof Stock) => {
+    if (column === sortColumn) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortColumn(column);
+      setSortDirection('asc');
+    }
+  };
+
+  const sortedStocks = [...dummyData.your_stocks].sort((a, b) => {
+    if (a[sortColumn as keyof Stock] < b[sortColumn as keyof Stock]) return sortDirection === 'asc' ? -1 : 1;
+    if (a[sortColumn as keyof Stock] > b[sortColumn as keyof Stock]) return sortDirection === 'asc' ? 1 : -1;
+    return 0;
+  });
 
   const handleCreateLeague = () => {
     createLeague({userId: user?.id || "", leagueName: leagueName});
@@ -81,6 +115,14 @@ export default function Home() {
 
   const handleJoinLeague = () => {
     joinLeague({userId: user?.id || "", inviteCode});
+  };
+
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [selectedStock, setSelectedStock] = useState<Stock | null>(null);
+
+  const handleSellClick = (tradeDetails: { ticker: string; amount: number; price: number; total: number }) => {
+    // Implement the sell logic here
+    console.log('Sell details:', tradeDetails);
   };
 
   return (
@@ -213,7 +255,7 @@ export default function Home() {
             <CardTitle className="pl-4 text-white text-2xl">Market Madness</CardTitle>
             <div className="flex gap-2">
               <SignOutButton>
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" className="bg-gradient-to-r from-orange-500 to-red-500">
                   Log-Out
                 </Button>
               </SignOutButton>
@@ -267,18 +309,51 @@ export default function Home() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    {Object.keys(dummyData.your_stocks[0]).map(key => (
-                      <TableHead key={key}>{key}</TableHead>
-                    ))}
+                    <TableHead onClick={() => handleSort('ticker')}>
+                      Ticker {sortColumn === 'ticker' && (sortDirection === 'asc' ? '↑' : '↓')}
+                    </TableHead>
+                    <TableHead onClick={() => handleSort('stockprice')}>
+                      Stock Price {sortColumn === 'stockprice' && (sortDirection === 'asc' ? '↑' : '↓')}
+                    </TableHead>
+                    <TableHead onClick={() => handleSort('owned')}>
+                      Owned {sortColumn === 'owned' && (sortDirection === 'asc' ? '↑' : '↓')}
+                    </TableHead>
+                    <TableHead onClick={() => handleSort('position')}>
+                      Position {sortColumn === 'position' && (sortDirection === 'asc' ? '↑' : '↓')}
+                    </TableHead>
+                    <TableHead onClick={() => handleSort('change')}>
+                      Change {sortColumn === 'change' && (sortDirection === 'asc' ? '↑' : '↓')}
+                    </TableHead>
+                    <TableHead></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {dummyData.your_stocks.map((row, index) => (
-                    <TableRow key={index}>
-                      {Object.values(row).map((value, cellIndex) => (
-                        <TableCell key={cellIndex}>{value}</TableCell>
-                      ))}
-                    </TableRow>
+                  {sortedStocks.map((stock, index) => (
+                      <TableRow key={index}>
+                        <TableCell>{stock.ticker}</TableCell>
+                        <TableCell>{stock.stockprice}</TableCell>
+                        <TableCell>{stock.owned}</TableCell>
+                        <TableCell>{stock.position}</TableCell>
+                        <TableCell className={stock.change.startsWith('-') ? 'text-red-500' : 'text-green-500'}>
+                          {stock.change}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <div className="flex justify-center space-x-2">
+                            <Button
+                                onClick={() => handleStockClick(stock, 'buy')}
+                                className="bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700"
+                            >
+                              Buy
+                            </Button>
+                            <Button
+                                onClick={() => handleStockClick(stock, 'sell')}
+                                className="bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700"
+                            >
+                              Sell
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
                   ))}
                 </TableBody>
               </Table>
@@ -286,6 +361,61 @@ export default function Home() {
           </Card>
         </div>
       </div>
+      <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+        <SheetContent side="left" className="bg-[#0c0a09] border-[#221f1e] w-[800px] sm:w-[540px]">
+          <SheetHeader>
+            <SheetTitle>{tradeAction === 'buy' ? 'Buy' : 'Sell'} {selectedStock?.ticker}</SheetTitle>
+          </SheetHeader>
+          <div className="mt-4">
+            <p>Current Price: {selectedStock?.stockprice}</p>
+            <p>Owned: {selectedStock?.owned}</p>
+            <p>Position: {selectedStock?.position}</p>
+          </div>
+        <div className="py-4">
+          <Graph/>
+        </div>
+          <div className="flex items-center space-x-2">
+            <Select onValueChange={(value: 'amount' | 'price') => setTradeType(value)}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select trade type"/>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="amount">Stock Amount</SelectItem>
+                <SelectItem value="price">Price Amount</SelectItem>
+              </SelectContent>
+            </Select>
+            <Input
+                type="number"
+                value={tradeValue}
+                onChange={(e) => setTradeValue(e.target.value)}
+                placeholder={tradeType === 'amount' ? 'Enter stock amount' : 'Enter price amount'}
+            />
+            <Button
+                onClick={() => {
+                  if (selectedStock) {
+                    const amount = tradeType === 'amount' ? parseFloat(tradeValue) : parseFloat(tradeValue) / parseFloat(selectedStock.stockprice.replace('$', ''));
+                    handleSellClick({
+                      ticker: selectedStock.ticker,
+                      amount: amount,
+                      price: parseFloat(selectedStock.stockprice.replace('$', '')),
+                      total: amount * parseFloat(selectedStock.stockprice.replace('$', ''))
+                    });
+                  }
+                }}
+                className={`bg-gradient-to-r ${tradeAction === 'buy' ? 'from-green-500 to-green-600 hover:from-green-600 hover:to-green-700' : 'from-red-500 to-red-600 hover:from-red-600 hover:to-red-700'} text-white border-none`}
+            >
+              {tradeAction === 'buy' ? 'Buy' : 'Sell'}
+            </Button>
+
+          </div>
+          <div className="mt-2 text-sm text-gray-400">
+            {tradeType === 'amount' ?
+                `Estimated cost: $${((parseFloat(tradeValue) || 0) * parseFloat(selectedStock?.stockprice?.replace('$', '') || '0')).toFixed(2)}` :
+                `Estimated shares: ${((parseFloat(tradeValue) || 0) / parseFloat(selectedStock?.stockprice?.replace('$', '') || '1')).toFixed(2)}`
+            }
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }
