@@ -62,8 +62,7 @@ export default function Home() {
   const {mutate: joinLeague} = useJoinLeague();
   const {mutate: makeTrade} = useMakeTrade();
   const {data: leagues} = useGetUserLeagues({userId: user?.id || ""});
-  const {data: userStocks} = useGetUserStocks({userId: user?.id || ""}) || {};
-  console.log("userStocks:", userStocks);
+  const {data: userStocks = []} = useGetUserStocks({userId: user?.id || ""});
   const { toast } = useToast()
 
 const userLeaguesWithPlacement = leagues?.data?.map((league: { name: string, id: string, code: string, label: string, data: Array<{ userId: string, name: string }> }) => {
@@ -110,7 +109,7 @@ const userLeaguesWithPlacement = leagues?.data?.map((league: { name: string, id:
     }
   };
 
-  const sortedStocks = [...userStocks].sort((a, b) => {
+  const sortedStocks = [...(userStocks.stocks || [])].sort((a, b) => {
     const aValue = a[sortColumn as keyof Stock];
     const bValue = b[sortColumn as keyof Stock];
       const aNum = parseFloat(aValue.replace(/[^0-9.-]+/g, ''));
