@@ -32,46 +32,7 @@ const data = {
     {name: "Friends", place: "1st"},
     {name: "Private", place: "3rd"},
   ],
-  // full_leaderboards: [
-  //   {
-  //     id: "tab1",
-  //     code:"",
-  //     label: "Global",
-  //     data: [
-  //       {name: "Alice", val: "$14,835"},
-  //       {name: "Bob", val: "$12,450"},
-  //       {name: "Charlie", val: "$9,591"},
-  //       {name: "David", val: "$8,623"},
-  //       {name: "Eve", val: "$7,250"},
-  //       {name: "Frank", val: "$6,550"},
-  //       {name: "Grace", val: "$5,875"},
-  //       {name: "Henry", val: "$5,250"},
-  //       {name: "Ivy", val: "$4,800"},
-  //     ],
-  //   },
-  //   {
-  //     id: "tab2",
-  //     label: "Friends",
-  //     code:"A7V93J",
-  //     data: [
-  //       {name: "Bob", val: "$12,450"},
-  //       {name: "David", val: "$8,623"},
-  //       {name: "Frank", val: "$6,550"},
-  //       {name: "Henry", val: "$5,250"},
-  //     ],
-  //   },
-  //   {
-  //     id: "tab3",
-  //     label: "Private",
-  //     code:"B540D8",
-  //     data: [
-  //       {name: "Charlie", val: "$9,591"},
-  //       {name: "David", val: "$8,623"},
-  //       {name: "Frank", val: "$6,550"},
-  //       {name: "Grace", val: "$5,875"},
-  //     ],
-  //   },
-  // ],
+
   your_stocks: [
     {ticker: "NVDA", stockprice: "$801", owned: "19.3", position:"$29,949", change: "+10.34%"},
     {ticker: "AAPL", stockprice: "$287.45", owned: "5.3", position:"$12,202", change: "-0.56%"},
@@ -101,7 +62,8 @@ export default function Home() {
   const {mutate: joinLeague} = useJoinLeague();
   const {mutate: makeTrade} = useMakeTrade();
   const {data: leagues} = useGetUserLeagues({userId: user?.id || ""});
-  const {data: userStocks} = useGetUserStocks({userId: user?.id || ""});
+  const {data: userStocks} = useGetUserStocks({userId: user?.id || ""}) || {};
+  console.log("userStocks:", userStocks);
   const { toast } = useToast()
 
 const userLeaguesWithPlacement = leagues?.data?.map((league: { name: string, id: string, code: string, label: string, data: Array<{ userId: string, name: string }> }) => {
@@ -148,7 +110,7 @@ const userLeaguesWithPlacement = leagues?.data?.map((league: { name: string, id:
     }
   };
 
-  const sortedStocks = [...data.your_stocks].sort((a, b) => {
+  const sortedStocks = [...userStocks].sort((a, b) => {
     const aValue = a[sortColumn as keyof Stock];
     const bValue = b[sortColumn as keyof Stock];
       const aNum = parseFloat(aValue.replace(/[^0-9.-]+/g, ''));
