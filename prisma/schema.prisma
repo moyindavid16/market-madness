@@ -33,7 +33,6 @@ model League {
 
 model UserStocks {
   quantity Float
-  stock    Market @relation(fields: [ticker], references: [ticker])
   ticker   String
   User     User   @relation(fields: [userId], references: [id])
   userId   String
@@ -53,8 +52,8 @@ model Trades {
 }
 
 model Market {
-  ticker     String       @id @unique
+  id String @id @default(uuid())
+  ticker     String       
   price      Float
   time       DateTime @default(now())
-  UserStocks UserStocks[]
 }
