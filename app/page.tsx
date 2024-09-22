@@ -14,6 +14,7 @@ import useCreateLeague from "./domains/leagues/useCreateLeague";
 import useJoinLeague from "./domains/leagues/useJoinLeague";
 import useMakeTrade from "./domains/trades/useMakeTrade";
 import { useToast } from "@/hooks/use-toast";
+import {InputOTP, InputOTPGroup, InputOTPSlot} from "@/components/ui/input-otp";
 
 const data = {
   portfolio_values: [
@@ -162,7 +163,7 @@ export default function Home() {
                 <DialogContent className="bg-[#1c1a19] border-[#221f1e]">
                   <DialogHeader>
                     <DialogTitle className="text-white">Manage Leagues</DialogTitle>
-                                    </DialogHeader>
+                  </DialogHeader>
                   <Tabs value={modalMode} className="text-white">
                     <TabsList className="grid w-full grid-cols-2 bg-[#0c0a09]">
                       <TabsTrigger
@@ -181,15 +182,25 @@ export default function Home() {
                       </TabsTrigger>
                     </TabsList>
                     <TabsContent value="join">
-                      <input
-                        type="text"
-                        className="w-full p-2 border rounded bg-white text-black"
-                        placeholder="Enter 6-digit code"
-                        maxLength={6}
-                        pattern="\d{6}"
-                        value={inviteCode}
-                        onChange={e => setInviteCode(e.target.value)}
-                      />
+                      <div className="flex flex-col items-center">
+                        <p className="mb-2 text-sm text-gray-400">Enter the 6-digit join code</p>
+                        <InputOTP
+                          maxLength={6}
+                          value={inviteCode}
+                          onChange={(value) => setInviteCode(value)}
+                          pattern="[a-zA-Z0-9]"
+                        >
+                          <InputOTPGroup>
+                            {Array.from({ length: 6 }).map((_, index) => (
+                              <InputOTPSlot
+                                key={index}
+                                index={index} 
+                                className="w-10 h-12 text-center border rounded bg-white text-black uppercase" 
+                              />
+                            ))}
+                          </InputOTPGroup>
+                        </InputOTP>
+                      </div>
                     </TabsContent>
                     <TabsContent value="create">
                       <input
