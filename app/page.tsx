@@ -89,6 +89,8 @@ export default function Home() {
   const [tradeType, setTradeType] = useState<'amount' | 'price'>('amount');
   const [tradeValue, setTradeValue] = useState('');
   const [tradeAction, setTradeAction] = useState<'buy' | 'sell'>('buy');
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [selectedStock, setSelectedStock] = useState<Stock | null>(null);
   const {user} = useUser();
   const {mutate: createLeague} = useCreateLeague();
   const {mutate: joinLeague} = useJoinLeague();
@@ -132,9 +134,6 @@ export default function Home() {
   const handleJoinLeague = () => {
     joinLeague({userId: user?.id || "", inviteCode});
   };
-
-  const [sheetOpen, setSheetOpen] = useState(false);
-  const [selectedStock, setSelectedStock] = useState<Stock | null>(null);
 
   const handleSellClick = (tradeDetails: { ticker: string; amount: number; price: number; total: number }) => {
     // Implement the sell logic here
@@ -419,9 +418,9 @@ export default function Home() {
             <p>Position: {selectedStock?.position}</p>
           </div>
         <div className="py-4">
-          <Graph
+          {/* <Graph
             symbol={selectedStock?.ticker}
-          />
+          /> */}
         </div>
           <div className="flex items-center space-x-2">
             <Select onValueChange={(value: 'amount' | 'price') => setTradeType(value)}>
@@ -443,6 +442,12 @@ export default function Home() {
                 onClick={() => {
                   if (selectedStock) {
                     const amount = tradeType === 'amount' ? parseFloat(tradeValue) : parseFloat(tradeValue) / parseFloat(selectedStock.stockprice.replace('$', ''));
+                    console.log({
+                      ticker: selectedStock.ticker,
+                      amount: amount,
+                      price: parseFloat(selectedStock.stockprice.replace('$', '')),
+                      total: amount * parseFloat(selectedStock.stockprice.replace('$', ''))
+                    })
                     handleSellClick({
                       ticker: selectedStock.ticker,
                       amount: amount,
