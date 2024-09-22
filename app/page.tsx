@@ -408,9 +408,9 @@ export default function Home() {
                       <TableCell>{stock.stockprice}</TableCell>
                       <TableCell>{stock.owned}</TableCell>
                       <TableCell>{stock.position}</TableCell>
-                      <TableCell className={stock.change.startsWith("-") ? "text-red-500" : "text-green-500"}>
-                        {stock.change}
-                      </TableCell>
+                      {/*<TableCell className={stock.change.startsWith("-") ? "text-red-500" : "text-green-500"}>*/}
+                      {/*  {stock.change}*/}
+                      {/*</TableCell>*/}
                       <TableCell className="text-center">
                         <div className="flex justify-center space-x-2">
                           <Button
