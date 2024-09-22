@@ -12,7 +12,7 @@ const Graph = ({ symbol, width, height, alt }: graphProps) => {
   if (!symbol) {
     return null;
   } else {
-    const data = useStockData(symbol) as unknown as {time: string, price: number, name: string} [];
+    const data = useStockData(symbol).data.marketData as unknown as {time: string, price: number, name: string} [];
 
     const latestDate = new Date(data[0].time);
     const earliestDate = new Date(data[data.length - 1].time);
