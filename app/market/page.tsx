@@ -23,19 +23,20 @@ const Stocks = [
   {ticker: "FB", price: "$330.75", change: "-1.2%"},
 ];
 
-const Trades = [
-  {date: "2024-03-15", ticker: "AAPL", action: "Buy", quantity: 10, price: "$150.25"},
-  {date: "2024-03-14", ticker: "GOOGL", action: "Sell", quantity: 5, price: "$2,750.80"},
-  {date: "2024-03-13", ticker: "MSFT", action: "Buy", quantity: 15, price: "$305.50"},
-];
+// const Trades = [
+//   {date: "2024-03-15", ticker: "AAPL",  quantity: 10, price: "$150.25"},
+//   {date: "2024-03-14", ticker: "GOOGL",  quantity: 5, price: "$2,750.80"},
+//   {date: "2024-03-13", ticker: "MSFT", quantity: 15, price: "$305.50"},
+// ];
 
 export default function MarketPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortColumn, setSortColumn] = useState("ticker");
   const [sortDirection, setSortDirection] = useState("asc");
   const {user} = useUser();
-  const {data: userTrades} = useGetUserTrades({userId: user?.id || ""});
-
+  const {data: userTrades = {data: []}} = useGetUserTrades({userId: user?.id || ""});
+  const Trades = userTrades.data || [];
+  console.log("User trades:", Trades);
   const filteredStocks = Stocks.filter(stock => stock.ticker.toLowerCase().includes(searchTerm.toLowerCase())).sort(
     (a, b) => {
       const aValue = a[sortColumn as keyof Stock];
@@ -81,22 +82,26 @@ export default function MarketPage() {
                   <TableRow>
                     <TableHead>Date</TableHead>
                     <TableHead>Ticker</TableHead>
-                    <TableHead>Action</TableHead>
                     <TableHead>Quantity</TableHead>
                     <TableHead>Price</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {Trades.map((trade, index) => (
+                {Trades.map((trade: {
+                  date: string;
+                  ticker: string;
+                  action: string;
+                  quantity: number;
+                  price: string;
+                }, index: number) => (
                     <TableRow key={index}>
-                      <TableCell>{trade.date}</TableCell>
+                      <TableCell>{trade.date.split('T')[0]}</TableCell>
                       <TableCell>{trade.ticker}</TableCell>
-                      <TableCell>{trade.action}</TableCell>
-                      <TableCell>{trade.quantity}</TableCell>
-                      <TableCell>{trade.price}</TableCell>
+                      <TableCell>{trade.quantity.toFixed(3)}</TableCell>
+                      <TableCell>${trade.price}</TableCell>
                     </TableRow>
-                  ))}
-                </TableBody>
+                ))}
+              </TableBody>
               </Table>
             </CardContent>
           </Card>
