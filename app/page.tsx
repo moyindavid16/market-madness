@@ -375,7 +375,9 @@ export default function Home() {
             <p>Position: {selectedStock?.position}</p>
           </div>
         <div className="py-4">
-          <Graph/>
+          <Graph
+            symbol={selectedStock?.ticker}
+          />
         </div>
           <div className="flex items-center space-x-2">
             <Select onValueChange={(value: 'amount' | 'price') => setTradeType(value)}>

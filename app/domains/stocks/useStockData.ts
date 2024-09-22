@@ -1,16 +1,16 @@
 "use client";
 
-import {useMutation} from "@tanstack/react-query";
+import {useQuery} from "@tanstack/react-query";
 
-export default function useStockData() {
-  return useMutation({
-    mutationFn: (symbol: string) => {
-      return fetch(`/api/stocks?symbol=${symbol}`, {
+export default function useStockData(symbol: string) {
+  return useQuery({
+    queryKey: ["stock-data", symbol],
+    queryFn: async () => {
+      const res = await fetch(`/api/stocks?symbol=${symbol}`, {
         method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        }
-      }).then((res) => res.json());
+      });
+
+      return res.json();
     },
   });
 }

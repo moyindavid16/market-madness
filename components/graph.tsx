@@ -1,43 +1,53 @@
+import useStockData from "../app/domains/stocks/useStockData";
 import AbstractChart from "./ui/chart";
 
 interface graphProps {
+  symbol?: string;
   width?: number;
   height?: number;
   alt?: string;
 }
 
-const Graph: React.FC<graphProps> = ({
-  width = 600,
-  height = 400,
-  alt = 'I AM A GRAPH'
-}) => {
-  return (
-    <AbstractChart 
-      instrumentName="S&P 500"
-      data={[
-        ["2024-08-20T13:00:00Z", 227.01], 
-        ["2024-08-20T14:00:00Z", 225.96], 
-        ["2024-08-20T15:00:00Z", 226.93],
-        ["2024-08-20T16:00:00Z", 226.50],
-        ["2024-08-20T17:00:00Z", 228.40],
-        ["2024-08-20T18:00:00Z", 228.90],
-        ["2024-08-20T19:00:00Z", 230.5],
-      ]}
-      inflationData={[
-        ["2024-08-20T13:00:00Z", 227.01],
-        ["2024-08-20T19:00:00Z", 229.00],
-      ]}
-      intrestRatesData={[
-        ["2024-08-20T13:00:00Z", 227.01],
-        ["2024-08-20T19:00:00Z", 230.30],
-      ]}
-      SPYData={[
-        ["2024-08-20T13:00:00Z", 227.01],
-        ["2024-08-20T19:00:00Z", 234.30],
-      ]}
-      className="bg-[#0C0A09] pt-6"
-    />
-  );
+const Graph = ({ symbol, width, height, alt }: graphProps) => {
+  if (!symbol) {
+    return null;
+  } else {
+    const data = useStockData(symbol) as unknown as {time: string, price: number, name: string} [];
+
+    const latestDate = new Date(data[0].time);
+    const earliestDate = new Date(data[data.length - 1].time);
+    
+    const timeDifference = latestDate.getTime() - earliestDate.getTime();
+    
+    const millisecondsInYear = 365 * 24 * 60 * 60 * 1000;
+    
+    const fractionOfYear = timeDifference / millisecondsInYear;
+
+    const chartData = data.map((record) => [record.time, record.price]) as unknown as [string, number][];
+    const chartInflationEndValue = data[0].price + data[0].price * fractionOfYear * 0.03;
+    const chartRatesEndValue = data[0].price + data[0].price * fractionOfYear * 0.0425;
+    const chartSPXEndValue = data[0].price + data[0].price * fractionOfYear * 0.105;
+
+    return (
+      <AbstractChart 
+        instrumentName="S&P 500"
+        data={chartData}
+        inflationData={[
+          [data[0].time, data[0].price],
+          [data[data.length - 1].time, chartInflationEndValue],
+        ]}
+        intrestRatesData={[
+          [data[0].time, data[0].price],
+          [data[data.length - 1].time, chartRatesEndValue],
+        ]}
+        SPYData={[
+          [data[0].time, data[0].price],
+          [data[data.length - 1].time, chartSPXEndValue],
+        ]}
+        className="bg-[#0C0A09] pt-6"
+      />
+    );
+  }
 };
 
 export default Graph;
