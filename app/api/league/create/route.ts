@@ -1,5 +1,5 @@
 import {NextResponse} from "next/server";
-import prisma from "../../../db/prisma";
+import prisma from "@/app/db/prisma";
 import { generateLeagueInviteCode } from "../../../domains/leagues/generateLeagueInvite";
 
 export async function POST(req: Request) {

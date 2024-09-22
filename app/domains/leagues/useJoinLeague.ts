@@ -2,7 +2,7 @@
 // import {currentUser} from "@clerk/nextjs/server";
 import {useMutation} from "@tanstack/react-query";
 
-export default function useCreateLeague() {
+export default function useJoinLeague() {
   return useMutation({
     mutationFn: (body: {userId: string; inviteCode: string}) => {
       return fetch(`/api/league/${body.inviteCode}`, {
