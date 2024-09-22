@@ -27,13 +27,14 @@ import useGetUserLeagues from "./domains/leagues/useGetUserLeagues";
 import useJoinLeague from "./domains/leagues/useJoinLeague";
 import useGetUserStocks from "./domains/stocks/useGetUserStocks";
 import useMakeTrade from "./domains/trades/useMakeTrade";
+import usePortfolioSnapshots from "./domains/portfolio/usePortfolioSnapshots";
 
 const data = {
   portfolio_values: [
-    {name: "Your Portfolio", value: "$14,592", change: "-1.24%"},
-    {name: "Dow Jones", value: "$12,345", change: "+0.56%"},
-    {name: "Interest Rate", value: "2.5%", change: "+0.25%"},
-    {name: "Inflation", value: "69.5%", change: "+1000%"},
+    {name: "Your Portfolio", value: "$9,718", change: "-2.82%"},
+    {name: "SP 500", value: "$10,820", change: "+0.82%"},
+    {name: "Interest Rate", value: "4.2%", change: "-0.5%"},
+    {name: "Inflation", value: "3%", change: "-0.25%"},
   ],
   leagues: [
     {name: "Global", place: "5th"},
@@ -71,7 +72,7 @@ export default function Home() {
   const {mutate: makeTrade} = useMakeTrade();
   const {data: leagues} = useGetUserLeagues({userId: user?.id || ""});
   const {data: userStocks = []} = useGetUserStocks({userId: user?.id || ""});
-  const { toast } = useToast()
+  const { toast } = useToast();
 
   const userLeaguesWithPlacement =
     leagues?.data?.map(
