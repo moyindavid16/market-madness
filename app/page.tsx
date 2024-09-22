@@ -18,6 +18,7 @@ import {InputOTP, InputOTPGroup, InputOTPSlot} from "@/components/ui/input-otp";
 import useGetUserLeagues from "./domains/leagues/useGetUserLeagues";
 import ChatComponent from "@/components/chat";
 import GraphPortfolio from "../components/graph-portfolio";
+import useGetUserStocks from "./domains/stocks/useGetUserStocks";
 
 const data = {
   portfolio_values: [
@@ -100,7 +101,8 @@ export default function Home() {
   const {mutate: joinLeague} = useJoinLeague();
   const {mutate: makeTrade} = useMakeTrade();
   const {data: leagues} = useGetUserLeagues({userId: user?.id || ""});
-  console.log("Leagues data:", leagues);
+  const {data: userStocks} = useGetUserStocks({userId: user?.id || ""});
+  const { toast } = useToast()
 
 const userLeaguesWithPlacement = leagues?.data?.map((league: { name: string, id: string, code: string, label: string, data: Array<{ userId: string, name: string }> }) => {
   console.log("Processing league:", league);
@@ -128,7 +130,6 @@ const userLeaguesWithPlacement = leagues?.data?.map((league: { name: string, id:
     if (j == 3 && k != 13) return "rd";
     return "th";
   }
-  const { toast } = useToast()
 
   const handleStockClick = (stock: Stock, action: 'buy' | 'sell') => {
     setSelectedStock(stock);
