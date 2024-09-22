@@ -4,6 +4,8 @@ import "./globals.css";
 import {SignedIn, SignedOut, SignInButton} from "@clerk/nextjs";
 import Providers from "./providers";
 import {Button} from "@/components/ui/button";
+import { Toaster } from "@/components/ui/toaster"
+
 const jetbrainsMono = localFont({
   src: "./fonts/JetBrainsMono-ExtraBold.ttf",
   variable: "--font-jetbrains-mono",
@@ -41,7 +43,9 @@ export default function RootLayout({
               <div className="absolute inset-0 bg-black opacity-10"/>
             </div>
           </SignedOut>
-          <SignedIn>{children}</SignedIn>
+          <SignedIn>{children}
+            <Toaster />
+          </SignedIn>
         </body>
       </html>
     </Providers>

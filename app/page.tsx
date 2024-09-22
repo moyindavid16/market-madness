@@ -15,6 +15,8 @@ import useJoinLeague from "./domains/leagues/useJoinLeague";
 import useMakeTrade from "./domains/trades/useMakeTrade";
 import { useToast } from "@/hooks/use-toast";
 import {InputOTP, InputOTPGroup, InputOTPSlot} from "@/components/ui/input-otp";
+import useGetUserLeagues from "./domains/leagues/useGetUserLeagues";
+import ChatComponent from "@/components/chat";
 
 const data = {
   portfolio_values: [
@@ -95,6 +97,7 @@ export default function Home() {
   const {mutate: createLeague} = useCreateLeague();
   const {mutate: joinLeague} = useJoinLeague();
   const {mutate: makeTrade} = useMakeTrade();
+  const {data: leagues} = useGetUserLeagues({userId: user?.id || ""});
   const { toast } = useToast()
 
   const handleStockClick = (stock: Stock, action: 'buy' | 'sell') => {
@@ -182,15 +185,15 @@ export default function Home() {
                         <InputOTP
                           maxLength={6}
                           value={inviteCode}
-                          onChange={(value) => setInviteCode(value)}
-                          pattern="[a-zA-Z0-9]"
+                          onChange={(value) => setInviteCode(value.toLowerCase())}
+                          pattern="[a-z0-9]"
                         >
                           <InputOTPGroup>
                             {Array.from({ length: 6 }).map((_, index) => (
                               <InputOTPSlot
                                 key={index}
                                 index={index} 
-                                className="w-10 h-12 text-center border rounded bg-white text-black uppercase" 
+                                className="w-10 h-12 text-center border rounded bg-white text-black lowercase" 
                               />
                             ))}
                           </InputOTPGroup>
@@ -219,11 +222,13 @@ export default function Home() {
                             title: "Joined League",
                             description: "You have successfully joined the league.",
                             variant: "default",
+                            className: "bg-[#0c0a09]",
                           });
                         } else {
                           handleCreateLeague();
                           toast({
                             title: "Created League",
+                            className: "bg-[#0c0a09]",
                             description: "Your new league has been created.",
                           });
                         }
@@ -343,12 +348,15 @@ export default function Home() {
             <div className="flex justify-between items-center p-4">
               <CardTitle className="pl-4 text-2xl">Your Portfolio</CardTitle>
               <Button
-                variant="outline"
-                size="lg"
-                className="text-lg bg-gradient-to-r from-green-500 to-green-600 text-white border-none hover:from-green-600 hover:to-green-700 "
-                onClick={() => window.location.href = '/market'}
+                  variant="outline"
+                  size="lg"
+                  className="text-lg bg-gradient-to-r from-green-500 to-green-600 text-white border-none hover:from-green-600 hover:to-green-700 flex items-center"
+                  onClick={() => window.location.href = '/market'}
               >
                 Market
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
+                </svg>
               </Button>
             </div>
             <CardContent>
@@ -470,6 +478,7 @@ export default function Home() {
           </div>
         </SheetContent>
       </Sheet>
+      <ChatComponent />
     </div>
   );
 }

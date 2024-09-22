@@ -6,6 +6,7 @@ export default function useGetUserLeagues({userId}: {userId: string}) {
   return useQuery({
     queryKey: ["user-leagues"],
     queryFn: async () => {
+      if(!userId)return
       const res = await fetch(`/api/league/list/${userId}`, {
         method: "GET",
       });
