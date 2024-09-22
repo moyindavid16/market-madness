@@ -10,7 +10,7 @@ datasource db {
 model User {
   id              String   @id
   name            String
-  portfolio_value Float    @default(0)
+  portfolio_value Float    @default(10000)
   trades          Trades[]
   leagues         League[] @relation("LeagueToUser")
 }
@@ -29,12 +29,14 @@ model UserStocks {
 }
 
 model Trades {
-  id          String  @id @default(uuid())
+  id          String   @id @default(uuid())
   trade_value Float
   price       Float
   quantity    Float
+  ticker      String
+  tradeTime   DateTime @default(now())
   userId      String?
-  User        User?   @relation(fields: [userId], references: [id])
+  User        User?    @relation(fields: [userId], references: [id])
 }
 
 model Market {
