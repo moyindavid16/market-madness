@@ -17,6 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import {InputOTP, InputOTPGroup, InputOTPSlot} from "@/components/ui/input-otp";
 import useGetUserLeagues from "./domains/leagues/useGetUserLeagues";
 import ChatComponent from "@/components/chat";
+import GraphPortfolio from "../components/graph-portfolio";
 
 const data = {
   portfolio_values: [
@@ -364,7 +365,7 @@ const handleLeagueClick = (league: { name: string }) => {
             </Card>
             <Card className="bg-[#0c0a09] text-white col-span-3 border-[#221f1e]">
               <CardContent>
-                <Graph width={800} height={400} alt="grpah" />
+                <GraphPortfolio width={800} height={400} alt="grpah" />
               </CardContent>
             </Card>
           </div>
@@ -452,9 +453,9 @@ const handleLeagueClick = (league: { name: string }) => {
             <p>Position: {selectedStock?.position}</p>
           </div>
         <div className="py-4">
-          {/* <Graph
+          <Graph
             symbol={selectedStock?.ticker}
-          /> */}
+          />
         </div>
           <div className="flex items-center space-x-2">
             <Select onValueChange={(value: 'amount' | 'price') => setTradeType(value)}>
