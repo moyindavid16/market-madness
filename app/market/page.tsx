@@ -7,14 +7,13 @@ import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableHead, TableHeader, TableBody, TableRow, TableCell } from "@/components/ui/table";
-// import { Dialog, DialogTitle, DialogContent, DialogFooter, DialogTrigger, DialogHeader } from "@/components/ui/dialog";
 interface Stock {
   ticker: string;
   price: string;
   change: string;
 }
 // Dummy data for demonstration
-const dummyStocks = [
+const Stocks = [
   { ticker: 'AAPL', price: '$150.25', change: '+1.5%' },
   { ticker: 'GOOGL', price: '$2,750.80', change: '-0.8%' },
   { ticker: 'MSFT', price: '$305.50', change: '+0.5%' },
@@ -22,7 +21,7 @@ const dummyStocks = [
   { ticker: 'FB', price: '$330.75', change: '-1.2%' },
 ];
 
-const dummyTrades = [
+const Trades = [
   { date: '2024-03-15', ticker: 'AAPL', action: 'Buy', quantity: 10, price: '$150.25' },
   { date: '2024-03-14', ticker: 'GOOGL', action: 'Sell', quantity: 5, price: '$2,750.80' },
   { date: '2024-03-13', ticker: 'MSFT', action: 'Buy', quantity: 15, price: '$305.50' },
@@ -33,32 +32,31 @@ export default function MarketPage() {
   const [sortColumn, setSortColumn] = useState('ticker');
   const [sortDirection, setSortDirection] = useState('asc');
 
-const filteredStocks = dummyStocks.filter(stock => 
-  stock.ticker.toLowerCase().includes(searchTerm.toLowerCase())
-).sort((a, b) => {
-  if (sortColumn === 'price') {
-    const aValue = parseFloat(a[sortColumn].replace('$', ''));
-    const bValue = parseFloat(b[sortColumn].replace('$', ''));
-    return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
-  }
-  if (sortColumn === 'change') {
-    const aValue = parseFloat(a[sortColumn].replace('%', ''));
-    const bValue = parseFloat(b[sortColumn].replace('%', ''));
-    return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
-  }
-  return sortDirection === 'asc' 
-    ? (a[sortColumn as keyof typeof a] as string).localeCompare(b[sortColumn as keyof typeof b] as string)
-    : (b[sortColumn as keyof typeof b] as string).localeCompare(a[sortColumn as keyof typeof a] as string);
-});
+  const filteredStocks = Stocks.filter(stock => 
+    stock.ticker.toLowerCase().includes(searchTerm.toLowerCase())
+  ).sort((a, b) => {
+    const aValue = a[sortColumn as keyof Stock];
+    const bValue = b[sortColumn as keyof Stock];
+    
+    if (typeof aValue === 'string' && typeof bValue === 'string') {
+      if (sortColumn === 'price' || sortColumn === 'change') {
+        const aNum = parseFloat(aValue.replace(/[^0-9.-]+/g, ''));
+        const bNum = parseFloat(bValue.replace(/[^0-9.-]+/g, ''));
+        return sortDirection === 'asc' ? aNum - bNum : bNum - aNum;
+      }
+      return sortDirection === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+    }
+    return 0;
+  });
 
-const handleSort = (column: 'ticker' | 'price' | 'change') => {
-  if (column === sortColumn) {
-    setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-  } else {
-    setSortColumn(column);
-    setSortDirection('asc');
-  }
-};
+  const handleSort = (column: 'ticker' | 'price' | 'change') => {
+    if (column === sortColumn) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortColumn(column);
+      setSortDirection('asc');
+    }
+  };
 
   const [sheetOpen, setSheetOpen] = useState(false);
   const [tradeType, setTradeType] = useState('amount'); // 'amount' or 'price'
@@ -88,7 +86,7 @@ const handleSort = (column: 'ticker' | 'price' | 'change') => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {dummyTrades.map((trade, index) => (
+                  {Trades.map((trade, index) => (
                     <TableRow key={index}>
                       <TableCell>{trade.date}</TableCell>
                       <TableCell>{trade.ticker}</TableCell>
@@ -125,9 +123,9 @@ const handleSort = (column: 'ticker' | 'price' | 'change') => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead onClick={() => handleSort('ticker')} className="cursor-pointer">Ticker {sortColumn === 'ticker' && (sortDirection === 'asc' ? '▲' : '▼')}</TableHead>
-                    <TableHead onClick={() => handleSort('price')} className="cursor-pointer">Price {sortColumn === 'price' && (sortDirection === 'asc' ? '▲' : '▼')}</TableHead>
-                    <TableHead onClick={() => handleSort('change')} className="cursor-pointer">Change {sortColumn === 'change' && (sortDirection === 'asc' ? '▲' : '▼')}</TableHead>
+                    <TableHead onClick={() => handleSort('ticker')} className="cursor-pointer">Ticker {sortColumn === 'ticker' && (sortDirection === 'asc' ? '↑' : '↓')}</TableHead>
+                    <TableHead onClick={() => handleSort('price')} className="cursor-pointer">Price {sortColumn === 'price' && (sortDirection === 'asc' ? '↑' : '↓')}</TableHead>
+                    <TableHead onClick={() => handleSort('change')} className="cursor-pointer">Change {sortColumn === 'change' && (sortDirection === 'asc' ? '↑' : '↓')}</TableHead>
                     <TableHead>Action</TableHead>
                   </TableRow>
                 </TableHeader>
