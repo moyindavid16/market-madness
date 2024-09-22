@@ -183,15 +183,15 @@ export default function Home() {
                         <InputOTP
                           maxLength={6}
                           value={inviteCode}
-                          onChange={(value) => setInviteCode(value)}
-                          pattern="[a-zA-Z0-9]"
+                          onChange={(value) => setInviteCode(value.toLowerCase())}
+                          pattern="[a-z0-9]"
                         >
                           <InputOTPGroup>
                             {Array.from({ length: 6 }).map((_, index) => (
                               <InputOTPSlot
                                 key={index}
                                 index={index} 
-                                className="w-10 h-12 text-center border rounded bg-white text-black uppercase" 
+                                className="w-10 h-12 text-center border rounded bg-white text-black lowercase" 
                               />
                             ))}
                           </InputOTPGroup>
@@ -220,11 +220,13 @@ export default function Home() {
                             title: "Joined League",
                             description: "You have successfully joined the league.",
                             variant: "default",
+                            className: "bg-[#0c0a09]",
                           });
                         } else {
                           handleCreateLeague();
                           toast({
                             title: "Created League",
+                            className: "bg-[#0c0a09]",
                             description: "Your new league has been created.",
                           });
                         }

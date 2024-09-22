@@ -8,11 +8,12 @@ datasource db {
 }
 
 model User {
-  id              String   @id
-  name            String
-  portfolio_value Float    @default(10000)
-  trades          Trades[]
-  leagues         League[] @relation("LeagueToUser")
+  id                String              @id
+  name              String
+  PortfolioSnapshot PortfolioSnapshot[]
+  trades            Trades[]
+  UserStocks        UserStocks[]
+  leagues           League[]            @relation("LeagueToUser")
 }
 
 model League {
@@ -23,9 +24,12 @@ model League {
 }
 
 model UserStocks {
-  id    String @id @default(uuid())
-  name  String
-  price Float
+  quantity Float
+  ticker   String
+  userId   String
+  User     User   @relation(fields: [userId], references: [id])
+
+  @@id([ticker, userId])
 }
 
 model Trades {
@@ -35,12 +39,21 @@ model Trades {
   quantity    Float
   ticker      String
   tradeTime   DateTime @default(now())
-  userId      String?
-  User        User?    @relation(fields: [userId], references: [id])
+  userId      String
+  User        User     @relation(fields: [userId], references: [id])
 }
 
 model Market {
-  name  String   @id @unique
-  price Float
-  time  DateTime
+  id     String   @id
+  ticker String
+  price  Float
+  time   DateTime @default(now())
+}
+
+model PortfolioSnapshot {
+  id        String   @id
+  value     Float
+  timestamp DateTime @default(now())
+  userId    String
+  User      User     @relation(fields: [userId], references: [id])
 }

@@ -8,6 +8,7 @@ export async function GET() {
   const user = await currentUser();
   if (user) {
     const name = user?.fullName || user?.firstName + " " + user?.lastName || user?.username || "unknown user";
+    console.log(name)
     const createdUser = await prisma.user.create({
       data: {id: user.id, name},
     });
